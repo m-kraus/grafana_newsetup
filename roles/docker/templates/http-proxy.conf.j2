@@ -1,0 +1,5 @@
+# {{ ansible_managed }}
+[Service]
+{% for item in proxy_config %}
+Environment="{{ item }}={{ proxy_config[item] }}"
+{% endfor %}

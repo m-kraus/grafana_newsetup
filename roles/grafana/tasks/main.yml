@@ -1,0 +1,26 @@
+---
+#TODO
+# - user management
+# - backends / provisioning
+
+- name: Ensure directories exist with needed permissions
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "root"
+    group: "root"
+    mode: 0750
+  with_items:
+    - "{{ grafana_config_path }}"
+    - "{{ grafana_db_path }}"
+
+- name: "Make sure needed network exists"
+  docker_network:
+    name: "prometheus"
+
+- name: Create grafana instances
+  include_tasks: create_instance.yml
+  vars:
+    grafana_instance: "{{ item.key }}"
+    grafana_port: "{{ item.value }}"
+  with_dict: "{{ grafana_instances }}"

@@ -1,0 +1,7 @@
+---
+dependencies: []
+
+galaxy_info:
+  author: michael.kraus@bitmarck.de
+  description: Docker for CentOS/RHEL
+  company: "BITMARCK Beratung"

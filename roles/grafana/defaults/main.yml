@@ -1,0 +1,14 @@
+---
+grafana_image:                "container-registry.bitmarck.org/registry/v1/grafana:6.5.2-bmb-1"
+
+grafana_config_path:          /etc/grafana
+grafana_db_path:              /srv/grafana
+
+grafana_opts: ""
+
+# OVERRIDE THIS WITH A VAULTED PASSWORD
+grafana_admin_pass: "admin"
+
+# name: port
+grafana_instances:
+  grafana: "3000"

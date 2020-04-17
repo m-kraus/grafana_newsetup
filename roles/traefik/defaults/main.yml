@@ -1,0 +1,5 @@
+---
+traefik_image:                "container-registry.bitmarck.org/registry/v1/traefik:v2.1.2"
+
+traefik_opts: ""
+

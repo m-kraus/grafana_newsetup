@@ -1,0 +1,22 @@
+---
+proxy_config: {}
+
+# Channel options
+docker_channel: "rel-*-ext-dockerce"
+docker_package: "docker-ce"
+docker_package_state: present
+
+# Service options.
+docker_service_state: started
+docker_service_enabled: true
+docker_restart_handler_state: restarted
+docker_systemd_directory: /etc/systemd/system/docker.service.d
+docker_systemd_file_proxyconf: http-proxy.conf
+
+# Docker Compose options.
+docker_install_compose: true
+docker_compose_version: "1.24.1"
+docker_compose_path: /usr/local/bin/docker-compose
+
+# A list of users who will be added to the docker group.
+docker_users: []

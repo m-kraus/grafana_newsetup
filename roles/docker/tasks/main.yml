@@ -1,0 +1,69 @@
+---
+- name: Add Docker GPG key.
+  rpm_key:
+    key: http://donkey701.gskv.org/pub/gpgkeys/RPM-GPG-KEY-DockerCE
+    state: present
+
+- name: Ensure old versions of Docker are not installed.
+  yum:
+    name:
+      - docker
+      - docker-common
+      - docker-engine
+    state: absent
+
+- name: Install Docker.
+  yum:
+    name: "{{ docker_package }}"
+    state: "{{ docker_package_state }}"
+    update_cache: yes
+    enablerepo: "{{ docker_channel }}"
+  notify: restart docker
+
+- name: Install Docker python bindings
+  yum:
+    name: "docker-python"
+    state: "{{ docker_package_state }}"
+    update_cache: yes
+    enablerepo: "{{ docker_channel }}"
+
+- name: Ensure systemd directory for docker is absent, when no proxy is configured.
+  file:
+    path: "{{ docker_systemd_directory }}"
+    state: absent
+  when: proxy_config | length == 0
+
+- name: Ensure systemd directory for docker exists.
+  file:
+    path: "{{ docker_systemd_directory }}"
+    state: directory
+  when: proxy_config | length > 0
+
+- name: Set proxy variables.
+  template:
+    src: http-proxy.conf.j2
+    dest: "{{ docker_systemd_directory }}/{{ docker_systemd_file_proxyconf }}"
+  register: proxy_template
+  when: proxy_config | length > 0
+  notify:
+    restart docker
+
+- name: Reload systemd daemon if template is changed.
+  systemd:
+    daemon_reload: true
+  when: proxy_template is changed
+
+- name: Ensure Docker is started and enabled at boot.
+  systemd:
+    name: docker
+    state: "{{ docker_service_state }}"
+    enabled: "{{ docker_service_enabled }}"
+
+- name: Ensure handlers are notified now to avoid firewall conflicts.
+  meta: flush_handlers
+
+- include_tasks: docker-compose.yml
+  when: docker_install_compose | bool
+
+- include_tasks: docker-users.yml
+  when: docker_users | length > 0

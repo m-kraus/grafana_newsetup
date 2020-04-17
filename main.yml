@@ -1,0 +1,33 @@
+---
+- hosts: grafana
+  gather_facts: yes
+  become: yes
+
+  vars:
+    # You can set proxy variables if needed here:
+    #proxy_config:
+    #  http_proxy: "http://my_proxy:port"
+    #  https_proxy: "http://my_proxy:port"
+    #  HTTP_PROXY: "my_proxy:port"
+    #  HTTPS_PROXY: "my_proxy:port"
+    #  NO_PROXY: "localhost,127.0.*"
+    docker_install_compose: false
+    grafana_instances:
+      grafana: "3000"
+    grafana_admin_pass: "admin"
+
+  environment: "{{ proxy_config }}"
+
+  #roles:
+  #  - { role: docker }
+
+  tasks:
+    - name: "Rolle docker"
+      include_role:
+        name: docker
+    - name: "Rolle grafana"
+      include_role:
+        name: grafana
+    - name: "Rolle traefik"
+      include_role:
+        name: traefik

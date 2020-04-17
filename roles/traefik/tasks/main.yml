@@ -1,0 +1,22 @@
+---
+- name: "Make sure needed network exists"
+  docker_network:
+    name: "grafana"
+
+- name: Start docker container
+  docker_container:
+    name: traefik
+    image: "{{ traefik_image }}"
+    command: "--providers.docker --providers.docker.exposedbydefault=false"
+    restart_policy: "always"
+    user: "root"
+    networks:
+      - name: "grafana"
+    purge_networks: yes
+    ports:
+      - "80:80"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    state: started
+    recreate: yes
+

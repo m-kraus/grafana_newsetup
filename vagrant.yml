@@ -1,0 +1,35 @@
+---
+- hosts: ctrl
+  gather_facts: no
+
+  vars:
+    proxy_config: {}
+
+  tasks:
+  - name: Check if proxy config file exists.
+    stat:
+      path: /tmp/my_proxy
+    register: my_proxy_stat
+
+  - name: Include proxy vars if set.
+    include_vars:
+      file: /tmp/my_proxy
+      name: proxy_config
+    when: my_proxy_stat.stat.exists
+
+  - name: Set proxy_config as fact on all nodes
+    set_fact:
+      proxy_config: "{{ proxy_config }}"
+    when: proxy_config | length > 0
+    delegate_to: "{{ item }}"
+    delegate_facts: true
+    with_items: "{{ groups['all'] }}"
+    run_once: true
+
+  - name: Copy vagrant insecure key
+    copy:
+      src: /vagrant/vagrant_insecure_private_key
+      dest: ~/.ssh/insecure_private_key
+      mode: '0600'
+
+- import_playbook: main.yml

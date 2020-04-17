@@ -1,0 +1,41 @@
+---
+- name: Ensure directories exist with needed permissions
+  file:
+    path: "{{ path }}"
+    state: directory
+    owner: "root"
+    group: "root"
+    mode: 0750
+  with_items:
+    - "{{ grafana_config_path }}/instances"
+    - "{{ grafana_config_path }}/instances/{{ grafana_instance }}"
+    - "{{ grafana_db_path }}/instances"
+    - "{{ grafana_db_path }}/instances/{{ grafana_instance }}"
+  loop_control:
+    loop_var: path
+
+- name: Start docker container
+  docker_container:
+    name: "{{ grafana_instance }}"
+    image: "{{ grafana_image }}"
+    labels:
+      traefik.enable: "true"
+    restart_policy: "always"
+    user: "root"
+    networks:
+      - name: "prometheus"
+    purge_networks: yes
+    ports:
+      - "{{ grafana_port }}:3000"
+    volumes:
+      - "{{ grafana_config_path }}/instances/{{ grafana_instance }}:/etc/grafana/provisioning"
+      - "{{ grafana_db_path }}/instances/{{ grafana_instance }}:/var/lib/grafana"
+    env:
+      GF_SECURITY_ADMIN_USER: "admin"
+      GF_SECURITY_ADMIN_PASSWORD: "{{ grafana_admin_pass }}"
+      #GF_USERS_ALLOW_SIGN_UP: false
+      GF_LOG_LEVEL: warn
+    state: started
+    recreate: yes
+    #TODO healthcheck
+
