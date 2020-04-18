@@ -7,7 +7,7 @@
   docker_container:
     name: traefik
     image: "{{ traefik_image }}"
-    command: "--providers.docker --providers.docker.exposedbydefault=false"
+    command: "--api.insecure=true --providers.docker --providers.docker.exposedbydefault=false"
     restart_policy: "always"
     user: "root"
     networks:
@@ -15,6 +15,7 @@
     purge_networks: yes
     ports:
       - "80:80"
+      - "8080:8080"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
     state: started

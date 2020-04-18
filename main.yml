@@ -12,11 +12,14 @@
     #  HTTPS_PROXY: "my_proxy:port"
     #  NO_PROXY: "localhost,127.0.*"
     docker_install_compose: false
+    grafana_url: "192.168.33.71.nip.io"
     grafana_instances:
-      grafana: "3000"
+      grafana01536: "version"
+      grafana01536dev: "version"
+      grafana01540: "version"
     grafana_admin_pass: "admin"
 
-  environment: "{{ proxy_config }}"
+    #environment: "{{ proxy_config }}"
 
   #roles:
   #  - { role: docker }
@@ -25,9 +28,26 @@
     - name: "Rolle docker"
       include_role:
         name: docker
-    - name: "Rolle grafana"
-      include_role:
-        name: grafana
     - name: "Rolle traefik"
       include_role:
         name: traefik
+    - name: "Rolle grafana"
+      include_role:
+        name: grafana
+
+- hosts: remotes
+  gather_facts: yes
+  become: yes
+ 
+  vars:
+    grafana_ip: "192.168.33.71"
+    grafana_url: "192.168.33.71.nip.io"
+    mapping:
+      node2: "grafana01536"
+      #nodeX: "grafana01536dev"
+      node3: "grafana01540"
+
+  tasks:
+    - name: "Rolle haproxy"
+      include_role:
+        name: haproxy

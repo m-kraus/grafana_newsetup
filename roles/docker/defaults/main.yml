@@ -2,7 +2,6 @@
 proxy_config: {}
 
 # Channel options
-docker_channel: "rel-*-ext-dockerce"
 docker_package: "docker-ce"
 docker_package_state: present
 

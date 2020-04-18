@@ -16,11 +16,14 @@
 
 - name: "Make sure needed network exists"
   docker_network:
-    name: "prometheus"
+    name: "grafana"
 
 - name: Create grafana instances
   include_tasks: create_instance.yml
   vars:
     grafana_instance: "{{ item.key }}"
     grafana_port: "{{ item.value }}"
+    grafana_version: "{{ item.key }}"
+    # Only this way dict keys with variables work
+    grafana_labels: "{ 'traefik.enable':'true', 'traefik.http.routers.{{ item.key }}.rule':'Host(`{{ item.key }}.{{ grafana_url }}`)', 'traefik.http.services.{{ grafana_instance }}.loadbalancer.server.port':'3000', 'traefik.docker.network':'grafana' }"
   with_dict: "{{ grafana_instances }}"

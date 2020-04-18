@@ -1,9 +1,4 @@
 ---
-- name: Add Docker GPG key.
-  rpm_key:
-    key: http://donkey701.gskv.org/pub/gpgkeys/RPM-GPG-KEY-DockerCE
-    state: present
-
 - name: Ensure old versions of Docker are not installed.
   yum:
     name:
@@ -12,20 +7,22 @@
       - docker-engine
     state: absent
 
+- name: Add Docker repo
+  get_url:
+    url: https://download.docker.com/linux/centos/docker-ce.repo
+    dest: /etc/yum.repos.d/docer-ce.repo
+
 - name: Install Docker.
   yum:
     name: "{{ docker_package }}"
     state: "{{ docker_package_state }}"
     update_cache: yes
-    enablerepo: "{{ docker_channel }}"
-  notify: restart docker
 
 - name: Install Docker python bindings
   yum:
     name: "docker-python"
     state: "{{ docker_package_state }}"
     update_cache: yes
-    enablerepo: "{{ docker_channel }}"
 
 - name: Ensure systemd directory for docker is absent, when no proxy is configured.
   file:

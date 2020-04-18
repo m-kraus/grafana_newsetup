@@ -12,10 +12,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     v.memory = 512
     v.cpus = 1
     v.linked_clone = true
-    v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
-    v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
-    # Use NAT ip that does not collide with ip addresses in use
-    v.customize ['modifyvm', :id, '--natnet1', '192.168.222.0/24']
   end
 
   # Define three VMs with static private IP addresses.
@@ -41,6 +37,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
     config.vm.synced_folder ".", "/vagrant"
     config.vm.network :private_network, ip: "192.168.33.70"
+    config.vm.network "forwarded_port", guest: 8123, host: 8123, auto_correct: true
     config.vm.provision "shell", inline: <<-SHELL
       #ATTENTION: ruby on windows cannot distinguish caase sensitive environment variables!
       export http_proxy=#{ENV["http_proxy"]}

@@ -18,15 +18,12 @@
   docker_container:
     name: "{{ grafana_instance }}"
     image: "{{ grafana_image }}"
-    labels:
-      traefik.enable: "true"
+    labels: "{{ grafana_labels }}"
     restart_policy: "always"
     user: "root"
     networks:
-      - name: "prometheus"
+      - name: "grafana"
     purge_networks: yes
-    ports:
-      - "{{ grafana_port }}:3000"
     volumes:
       - "{{ grafana_config_path }}/instances/{{ grafana_instance }}:/etc/grafana/provisioning"
       - "{{ grafana_db_path }}/instances/{{ grafana_instance }}:/var/lib/grafana"

@@ -1,7 +1,0 @@
----
-dependencies: []
-
-galaxy_info:
-    author: michael.kraus@bitmarck.de
-    description: Install and configure Prometheus
-    company: "BITMARCK Beratung"
